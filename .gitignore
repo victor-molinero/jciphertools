@@ -24,3 +24,9 @@ hs_err_pid*
 replay_pid*
 
 target/
+
+# Node modules
+node_modules/
+
+# angular
+.angular/
