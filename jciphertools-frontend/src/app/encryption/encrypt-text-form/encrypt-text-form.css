@@ -1,0 +1,41 @@
+.cipher-card {
+  max-width: 640px;
+  margin: 3rem auto;
+  padding: 2rem;
+  background: #1C1C1C;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+.cipher-card .title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #7a23d2;
+}
+
+.cipher-card .full-width {
+  width: 100%;
+}
+
+.cipher-card .actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.cipher-card .actions button {
+  flex: 1;
+  background-color: #7a23d2;
+  color: #fff; /* ensure text is readable */
+  border: none;
+}
+
+.cipher-card .error-message {
+  padding: 0.75rem 1rem;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  border-radius: 4px;
+  color: #991b1b;
+  font-size: 0.9rem;
+}
