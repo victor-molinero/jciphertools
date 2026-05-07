@@ -1,7 +1,7 @@
 package com.jciphertools.presentation.controllers;
 
-import com.jciphertools.application.DecryptUseCase;
-import com.jciphertools.application.EncryptUseCase;
+import com.jciphertools.application.UseCases.DecryptUseCase;
+import com.jciphertools.application.UseCases.EncryptUseCase;
 import com.jciphertools.domain.CipherRequest;
 import com.jciphertools.domain.CipherResponse;
 import com.jciphertools.presentation.apidocs.ApiDocs;

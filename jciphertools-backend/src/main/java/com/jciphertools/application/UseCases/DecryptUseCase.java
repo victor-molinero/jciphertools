@@ -1,8 +1,8 @@
-package com.jciphertools.application;
+package com.jciphertools.application.UseCases;
 
 import org.springframework.stereotype.Service;
 
-import com.jciphertools.domain.CipherPort;
+import com.jciphertools.application.Interfaces.CipherPort;
 import com.jciphertools.domain.CipherRequest;
 import com.jciphertools.domain.CipherResponse;
 

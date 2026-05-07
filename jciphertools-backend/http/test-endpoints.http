@@ -8,3 +8,21 @@ Content-Type: application/json
   "input": "Hello World",
   "algorithm": "AES_CBC_256"
 }
+
+### Encrypt with AES-GCM-256
+POST {{baseUrl}}/api/v1/encrypt
+Content-Type: application/json
+
+{
+  "input": "Hello World",
+  "algorithm": "AES_GCM_256"
+}
+
+### Encrypt with RSA-OAEP-2048
+POST {{baseUrl}}/api/v1/encrypt
+Content-Type: application/json
+
+{
+  "input": "Hello World",
+  "algorithm": "RSA_OAEP"
+}
