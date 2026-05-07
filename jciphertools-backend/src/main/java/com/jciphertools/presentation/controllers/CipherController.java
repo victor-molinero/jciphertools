@@ -1,5 +1,9 @@
 package com.jciphertools.presentation.controllers;
 
+import com.jciphertools.application.DecryptUseCase;
+import com.jciphertools.application.EncryptUseCase;
+import com.jciphertools.domain.CipherRequest;
+import com.jciphertools.domain.CipherResponse;
 import com.jciphertools.presentation.apidocs.ApiDocs;
 import com.jciphertools.presentation.dto.CipherRequestDto;
 import com.jciphertools.presentation.dto.CipherResponseDto;
@@ -19,17 +23,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class CipherController {
 
 
-    public CipherController() {
+    private final EncryptUseCase encryptUseCase;
+    private final DecryptUseCase decryptUseCase;
 
+    public CipherController(EncryptUseCase encryptUseCase, DecryptUseCase decryptUseCase) {
+        this.encryptUseCase = encryptUseCase;
+        this.decryptUseCase = decryptUseCase;
     }
-
     @PostMapping("/encrypt")
     @Operation(summary = "Encrypt input using the specified algorithm")
     @ApiResponse(responseCode = "200", description = "Encryption successful")
     @ApiDocs.CommonCipherErrorResponses
     public ResponseEntity<CipherResponseDto> encrypt(@Valid @RequestBody CipherRequestDto dto) {
-
-        return ResponseEntity.ok(new CipherResponseDto("TODO: implement encryption logic"));
+        
+        CipherRequest request = new CipherRequest(dto.input(), dto.algorithm());
+        CipherResponse response = encryptUseCase.execute(request);
+        return ResponseEntity.ok(new CipherResponseDto(response.result()));
     }
 
     @PostMapping("/decrypt")
@@ -37,6 +46,8 @@ public class CipherController {
     @ApiResponse(responseCode = "200", description = "Decryption successful")
     @ApiDocs.CommonCipherErrorResponses
     public ResponseEntity<CipherResponseDto> decrypt(@Valid @RequestBody CipherRequestDto dto) {
-        return ResponseEntity.ok(new CipherResponseDto("TODO: implement decryption logic"));
+        CipherRequest request = new CipherRequest(dto.input(), dto.algorithm());
+        CipherResponse response = decryptUseCase.execute(request);
+        return ResponseEntity.ok(new CipherResponseDto(response.result()));
     }
 }
