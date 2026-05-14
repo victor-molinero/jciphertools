@@ -5,7 +5,9 @@
     <mat-form-field appearance="outline" class="full-width">
       <mat-label>Algorithm</mat-label>
       <mat-select formControlName="algorithm">
-        <mat-option *ngFor="let algo of algorithms" [value]="algo.value">{{ algo.label }}</mat-option>
+        @for (algo of algorithms; track algo.value) {
+          <mat-option [value]="algo.value">{{ algo.label }}</mat-option>
+        }
       </mat-select>
     </mat-form-field>
 
@@ -21,21 +23,23 @@
     </mat-form-field>
 
     <div class="actions">
-      <button mat-raised-button color="primary" type="button" (click)="encrypt()" [disabled]="loading || form.invalid">
-        {{ loading ? 'Processing…' : 'Encrypt' }}
+      <button mat-raised-button color="primary" type="button" (click)="encrypt()" [disabled]="loading() || form.invalid">
+        {{ loading() ? 'Processing…' : 'Encrypt' }}
       </button>
-      <button mat-stroked-button color="accent" type="button" (click)="decrypt()" [disabled]="loading || form.invalid">
-        {{ loading ? 'Processing…' : 'Decrypt' }}
+      <button mat-stroked-button color="accent" type="button" (click)="decrypt()" [disabled]="loading() || form.invalid">
+        {{ loading() ? 'Processing…' : 'Decrypt' }}
       </button>
     </div>
   </form>
 
   <mat-form-field appearance="outline" class="full-width">
     <mat-label>Result</mat-label>
-    <textarea matInput [value]="output" readonly rows="5"></textarea>
+    <textarea matInput [value]="output()" readonly rows="5"></textarea>
   </mat-form-field>
 
-  <div class="error-message" *ngIf="errorMessage">
-    {{ errorMessage }}
-  </div>
+  @if (errorMessage()) {
+    <div class="error-message">
+      {{ errorMessage() }}
+    </div>
+  }
 </section>
