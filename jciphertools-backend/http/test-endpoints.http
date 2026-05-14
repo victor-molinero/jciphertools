@@ -9,6 +9,15 @@ Content-Type: application/json
   "algorithm": "AES_CBC_256"
 }
 
+### Decrypt with AES-CBC-256
+POST {{baseUrl}}/api/v1/decrypt
+Content-Type: application/json
+
+{
+  "input": "yS6XB8ZEdm340Bb8Tk/n6Q==",
+  "algorithm": "AES_CBC_256"
+}
+
 ### Encrypt with AES-GCM-256
 POST {{baseUrl}}/api/v1/encrypt
 Content-Type: application/json
@@ -18,6 +27,16 @@ Content-Type: application/json
   "algorithm": "AES_GCM_256"
 }
 
+### Decrypt with AES-GCM-256
+POST {{baseUrl}}/api/v1/decrypt
+Content-Type: application/json
+
+{
+  "input": "gOv5EgSv3IcCfQPR9TFw7ib3NId59UnQAgPI",
+  "algorithm": "AES_GCM_256"
+}
+
+
 ### Encrypt with RSA-OAEP-2048
 POST {{baseUrl}}/api/v1/encrypt
 Content-Type: application/json
@@ -26,3 +45,14 @@ Content-Type: application/json
   "input": "Hello World",
   "algorithm": "RSA_OAEP"
 }
+
+
+### Decrypt with RSA-OAEP-2048
+POST {{baseUrl}}/api/v1/decrypt
+Content-Type: application/json
+
+{
+  "input": "Hello World",
+  "algorithm": "RSA_OAEP"
+}
+

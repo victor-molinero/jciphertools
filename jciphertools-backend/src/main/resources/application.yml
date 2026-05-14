@@ -2,7 +2,13 @@ cipher:
   aes:
     cbc:
       # 32-byte (256-bit) AES key, Base64-encoded — override via env vars in production
-      key: ${AES_KEY:c2VjcmV0S2V5Rm9yQWVzMjU2Qml0c0tleVZhbHVlISE=}
+      key: ${AES_CBC_KEY:c2VjcmV0S2V5Rm9yQWVzMjU2Qml0c0tleVZhbHVlISE=}
       # 16-byte IV, Base64-encoded
-      iv: ${AES_IV:aW5pdFZlY3RvcjE2Qnl0ZQ==}
+      iv: ${AES_CBC_IV:aW5pdFZlY3RvcjE2Qnl0ZQ==}
+    gcm:
+      # 32-byte (256-bit) AES key, Base64-encoded — override via env vars in production
+      key: ${AES_GCM_KEY:3jIaFPkuyH6DYIyoFNykNaQBELjeQIbnXcbyxtG6BVU=}
+      # 12-byte IV, Base64-encoded
+      iv: ${AES_GCM_IV:hVa/GvGYHS5mTIi6}
+    
 
