@@ -11,4 +11,6 @@ cipher:
       # 12-byte IV, Base64-encoded
       iv: ${AES_GCM_IV:hVa/GvGYHS5mTIi6}
     
-
+  rsa:
+    public-key-path: ${RSA_PUBLIC_KEY_PATH:keys/public_key.pem}
+    private-key-path: ${RSA_PRIVATE_KEY_PATH:keys/private_key.pem}
