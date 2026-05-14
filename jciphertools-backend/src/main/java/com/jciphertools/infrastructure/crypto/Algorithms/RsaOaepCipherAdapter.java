@@ -1,5 +1,22 @@
 package com.jciphertools.infrastructure.crypto.Algorithms;
 
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.GeneralSecurityException;
+import java.security.KeyFactory;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.spec.MGF1ParameterSpec;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.Base64;
+
+import javax.crypto.Cipher;
+import javax.crypto.spec.OAEPParameterSpec;
+import javax.crypto.spec.PSource;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.jciphertools.domain.CipherRequest;
@@ -8,15 +25,52 @@ import com.jciphertools.infrastructure.crypto.CipherAdapter;
 
 @Component
 public class RsaOaepCipherAdapter implements CipherAdapter {
-    @Override
-    public CipherResponse encrypt(CipherRequest request) {
-        // Implement RSA-OAEP encryption logic here
-        return new CipherResponse("Encrypted data using RSA-OAEP");
+
+    private static final String TRANSFORMATION = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
+    private static final OAEPParameterSpec OAEP_PARAMS = new OAEPParameterSpec(
+            "SHA-256", "MGF1", MGF1ParameterSpec.SHA256, PSource.PSpecified.DEFAULT);
+
+    private final PublicKey publicKey;
+    private final PrivateKey privateKey;
+
+    public RsaOaepCipherAdapter(
+            @Value("${cipher.rsa.public-key-path}") String publicKeyPath,
+            @Value("${cipher.rsa.private-key-path}") String privateKeyPath) throws Exception {
+        this.publicKey = loadPublicKey(Path.of(publicKeyPath));
+        this.privateKey = loadPrivateKey(Path.of(privateKeyPath));
     }
 
     @Override
-    public CipherResponse decrypt(CipherRequest request) {
-        // Implement RSA-OAEP decryption logic here
-        return new CipherResponse("Decrypted data using RSA-OAEP");
+    public CipherResponse encrypt(CipherRequest request) throws GeneralSecurityException {
+        Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+        cipher.init(Cipher.ENCRYPT_MODE, publicKey, OAEP_PARAMS);
+        byte[] encrypted = cipher.doFinal(request.input().getBytes(StandardCharsets.UTF_8));
+        return new CipherResponse(Base64.getEncoder().encodeToString(encrypted));
+    }
+
+    @Override
+    public CipherResponse decrypt(CipherRequest request) throws GeneralSecurityException {
+        Cipher cipher = Cipher.getInstance(TRANSFORMATION);
+        cipher.init(Cipher.DECRYPT_MODE, privateKey, OAEP_PARAMS);
+        byte[] decrypted = cipher.doFinal(Base64.getDecoder().decode(request.input()));
+        return new CipherResponse(new String(decrypted, StandardCharsets.UTF_8));
+    }
+
+    private static PublicKey loadPublicKey(Path path) throws Exception {
+        String pem = Files.readString(path)
+                .replaceAll("-----[A-Z ]+-----", "")
+                .replaceAll("\\s", "");
+        byte[] der = Base64.getDecoder().decode(pem);
+        KeyFactory kf = KeyFactory.getInstance("RSA");
+        return kf.generatePublic(new X509EncodedKeySpec(der));
+    }
+
+    private static PrivateKey loadPrivateKey(Path path) throws Exception {
+        String pem = Files.readString(path)
+                .replaceAll("-----[A-Z ]+-----", "")
+                .replaceAll("\\s", "");
+        byte[] der = Base64.getDecoder().decode(pem);
+        KeyFactory kf = KeyFactory.getInstance("RSA");
+        return kf.generatePrivate(new PKCS8EncodedKeySpec(der));
     }
 }
