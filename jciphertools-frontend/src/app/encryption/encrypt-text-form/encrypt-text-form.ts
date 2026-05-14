@@ -1,7 +1,5 @@
-
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
@@ -11,7 +9,6 @@ import { Encrypt, Algorithm } from '../encrypt';
 @Component({
   selector: 'app-encrypt-text-form',
   imports: [
-    CommonModule,
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
@@ -20,28 +17,24 @@ import { Encrypt, Algorithm } from '../encrypt';
   ],
   templateUrl: './encrypt-text-form.html',
   styleUrl: './encrypt-text-form.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EncryptTextForm {
+  private readonly fb = inject(FormBuilder);
+  private readonly cipher = inject(Encrypt);
 
-  form: FormGroup;
-  output = '';
-  errorMessage = '';
-  loading = false;
+  readonly form = this.fb.nonNullable.group({
+    input: ['', [Validators.required]],
+    algorithm: ['AES_CBC_256' as Algorithm, [Validators.required]]
+  });
+  readonly output = signal('');
+  readonly errorMessage = signal('');
+  readonly loading = signal(false);
 
   readonly algorithms: { value: Algorithm; label: string }[] = [
     { value: 'AES_CBC_256', label: 'AES-CBC-256' },
     { value: 'RSA_OAEP',    label: 'RSA-OAEP (SHA-256)' }
   ];
-
-  constructor(private fb: FormBuilder, private cipher: Encrypt) {
-    this.form = this.fb.group({
-      input:     ['', [Validators.required]],
-      algorithm: ['AES_CBC_256', [Validators.required]]
-    });
-  }
-
-  get inputControl() { return this.form.get('input')!; }
-  get algorithmControl() { return this.form.get('algorithm')!; }
 
   encrypt(): void {
     if (this.form.invalid) return;
@@ -54,24 +47,35 @@ export class EncryptTextForm {
   }
 
   private execute(operation: 'encrypt' | 'decrypt'): void {
-    this.loading = true;
-    this.output = '';
-    this.errorMessage = '';
+    this.loading.set(true);
+    this.output.set('');
+    this.errorMessage.set('');
 
-    const { input, algorithm } = this.form.value;
+    const { input, algorithm } = this.form.getRawValue();
     const call$ = operation === 'encrypt'
       ? this.cipher.encrypt(input, algorithm)
       : this.cipher.decrypt(input, algorithm);
 
     call$.subscribe({
       next: result => {
-        this.output = result;
-        this.loading = false;
+        this.output.set(result);
+        this.loading.set(false);
       },
-      error: err => {
-        this.errorMessage = err?.error?.message ?? 'An unexpected error occurred.';
-        this.loading = false;
+      error: (err: unknown) => {
+        this.errorMessage.set(this.extractErrorMessage(err));
+        this.loading.set(false);
       }
     });
+  }
+
+  private extractErrorMessage(err: unknown): string {
+    if (typeof err === 'object' && err !== null && 'error' in err) {
+      const nestedError = (err as { error?: { message?: string } }).error;
+      if (nestedError?.message) {
+        return nestedError.message;
+      }
+    }
+
+    return 'An unexpected error occurred.';
   }
 }
