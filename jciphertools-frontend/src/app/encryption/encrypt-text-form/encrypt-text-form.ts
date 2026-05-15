@@ -4,7 +4,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { Encrypt, Algorithm } from '../encrypt';
+import { EncryptionService } from '../encryption-service';
+import { Algorithm, Algorithms} from '../algorithms';
 
 @Component({
   selector: 'app-encrypt-text-form',
@@ -21,7 +22,7 @@ import { Encrypt, Algorithm } from '../encrypt';
 })
 export class EncryptTextForm {
   private readonly fb = inject(FormBuilder);
-  private readonly cipher = inject(Encrypt);
+  private readonly cipher = inject(EncryptionService);
 
   readonly form = this.fb.nonNullable.group({
     input: ['', [Validators.required]],
@@ -31,10 +32,11 @@ export class EncryptTextForm {
   readonly errorMessage = signal('');
   readonly loading = signal(false);
 
-  readonly algorithms: { value: Algorithm; label: string }[] = [
+  readonly algorithms: Algorithms[] = [
     { value: 'AES_CBC_256', label: 'AES-CBC-256' },
+    { value: 'AES_GCM_256', label: 'AES-GCM-256' },
     { value: 'RSA_OAEP',    label: 'RSA-OAEP (SHA-256)' }
-  ];
+];
 
   encrypt(): void {
     if (this.form.invalid) return;
