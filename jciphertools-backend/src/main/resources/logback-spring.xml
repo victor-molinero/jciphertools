@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Console appender — JSON via Logstash encoder -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdcKeyName>traceId</includeMdcKeyName>
+        </encoder>
+    </appender>
+
+    <!-- Rolling file appender — JSON logs for Logstash to pick up -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/jciphertools-backend.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/jciphertools-backend.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>7</maxHistory>
+        </rollingPolicy>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+    <!-- Detailed crypto operation tracing -->
+    <logger name="com.jciphertools.infrastructure.crypto" level="DEBUG"/>
+    
+    <!-- Application use case execution logging -->
+    <logger name="com.jciphertools.application" level="INFO"/>
+    
+    <!-- Presentation layer request/response logging -->
+    <logger name="com.jciphertools.presentation" level="INFO"/>
+    
+    <!-- Configuration and startup diagnostics -->
+    <logger name="com.jciphertools.infrastructure.config" level="DEBUG"/>
+    
+    <!-- Domain-level validation logging -->
+    <logger name="com.jciphertools.domain" level="DEBUG"/>
+
+</configuration>

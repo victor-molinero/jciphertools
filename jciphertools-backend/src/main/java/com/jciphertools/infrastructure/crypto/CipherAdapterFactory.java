@@ -2,6 +2,8 @@ package com.jciphertools.infrastructure.crypto;
 
 import java.security.GeneralSecurityException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.jciphertools.application.Exceptions.CipherOperationException;
@@ -15,6 +17,8 @@ import com.jciphertools.infrastructure.crypto.Algorithms.RsaOaepCipherAdapter;
 
 @Component
 public class CipherAdapterFactory implements CipherPort {
+    private static final Logger log = LoggerFactory.getLogger(CipherAdapterFactory.class);
+
 
     private final AesCbcCipherAdapter _aesCbcAdapter;
     private final AesGcmCipherAdapter _aesGcmAdapter;
@@ -26,22 +30,31 @@ public class CipherAdapterFactory implements CipherPort {
         this._aesCbcAdapter = aesCbcAdapter;
         this._aesGcmAdapter = aesGcmAdapter;
         this._rsaOaepAdapter = rsaOaepAdapter;
+        log.info("CipherAdapterFactory initialized with adapters: [AES-CBC-256, AES-GCM-256, RSA-OAEP]");
     }
 
     @Override
     public CipherResponse encrypt(CipherRequest request) {
+        log.info("Encrypt operation initiated with algorithm: {}", request.algorithm());
         try {
-            return resolve(request.algorithm()).encrypt(request);
+            CipherAdapter adapter = resolve(request.algorithm());
+            log.debug("Resolved adapter: {} for encryption", adapter.getClass().getSimpleName());
+            return adapter.encrypt(request);
         } catch (GeneralSecurityException ex) {
+            log.error("Encryption failed for algorithm: {} - {}", request.algorithm(), ex.getMessage());
             throw new CipherOperationException("Cipher operation failed", ex);
         }
     }
 
     @Override
     public CipherResponse decrypt(CipherRequest request) {
+        log.info("Decrypt operation initiated with algorithm: {}", request.algorithm());
         try {
-            return resolve(request.algorithm()).decrypt(request);
+            CipherAdapter adapter = resolve(request.algorithm());
+            log.debug("Resolved adapter: {} for decryption", adapter.getClass().getSimpleName());
+            return adapter.decrypt(request);
         } catch (GeneralSecurityException ex) {
+            log.error("Decryption failed for algorithm: {} - {}", request.algorithm(), ex.getMessage());
             throw new CipherOperationException("Cipher operation failed", ex);
         }
     }

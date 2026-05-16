@@ -16,6 +16,8 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.OAEPParameterSpec;
 import javax.crypto.spec.PSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -29,6 +31,8 @@ public class RsaOaepCipherAdapter implements CipherAdapter {
     private static final String TRANSFORMATION = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
     private static final OAEPParameterSpec OAEP_PARAMS = new OAEPParameterSpec(
             "SHA-256", "MGF1", MGF1ParameterSpec.SHA256, PSource.PSpecified.DEFAULT);
+    private static final Logger log = LoggerFactory.getLogger(RsaOaepCipherAdapter.class);
+
 
     private final PublicKey publicKey;
     private final PrivateKey privateKey;
@@ -38,21 +42,26 @@ public class RsaOaepCipherAdapter implements CipherAdapter {
             @Value("${cipher.rsa.private-key-path}") String privateKeyPath) throws Exception {
         this.publicKey = loadPublicKey(Path.of(publicKeyPath));
         this.privateKey = loadPrivateKey(Path.of(privateKeyPath));
+        log.info("RSA-OAEP adapter initialized with keys successfully loaded");
     }
 
     @Override
     public CipherResponse encrypt(CipherRequest request) throws GeneralSecurityException {
+        log.debug("RSA-OAEP encryption: initializing cipher");
         Cipher cipher = Cipher.getInstance(TRANSFORMATION);
         cipher.init(Cipher.ENCRYPT_MODE, publicKey, OAEP_PARAMS);
         byte[] encrypted = cipher.doFinal(request.input().getBytes(StandardCharsets.UTF_8));
+        log.debug("RSA-OAEP encryption successful, encrypted size: {} bytes", encrypted.length);
         return new CipherResponse(Base64.getEncoder().encodeToString(encrypted));
     }
 
     @Override
     public CipherResponse decrypt(CipherRequest request) throws GeneralSecurityException {
+        log.debug("RSA-OAEP decryption: initializing cipher with private key");
         Cipher cipher = Cipher.getInstance(TRANSFORMATION);
         cipher.init(Cipher.DECRYPT_MODE, privateKey, OAEP_PARAMS);
         byte[] decrypted = cipher.doFinal(Base64.getDecoder().decode(request.input()));
+        log.debug("RSA-OAEP decryption successful");
         return new CipherResponse(new String(decrypted, StandardCharsets.UTF_8));
     }
 
