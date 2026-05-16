@@ -1,4 +1,4 @@
-@baseUrl = http://localhost:8080
+@baseUrl = http://localhost:8081
 
 ### Encrypt with AES-CBC-256
 POST {{baseUrl}}/api/v1/encrypt
@@ -56,3 +56,11 @@ Content-Type: application/json
   "algorithm": "RSA_OAEP"
 }
 
+### Encrypt with TRIPLE-DES-CBC
+POST {{baseUrl}}/api/v1/encrypt
+Content-Type: application/json
+
+{
+  "input": "Hello World",
+  "algorithm": "TRIPLE_DES_CBC"
+}
