@@ -6,7 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
+    "test": "npm run test:headless",
+    "test:headless": "CHROME_BIN=${CHROME_BIN:-$(command -v chromium-browser || command -v chromium || command -v google-chrome || command -v google-chrome-stable)} ng test --watch=false --browsers=ChromeHeadless",
+    "test:watch": "CHROME_BIN=${CHROME_BIN:-$(command -v chromium-browser || command -v chromium || command -v google-chrome || command -v google-chrome-stable)} ng test --browsers=Chrome",
     "serve:ssr:jciphertools-frontend": "node dist/jciphertools-frontend/server/server.mjs"
   },
   "prettier": {
