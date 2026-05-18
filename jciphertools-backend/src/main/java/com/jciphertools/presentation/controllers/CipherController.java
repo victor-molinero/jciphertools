@@ -8,6 +8,9 @@ import com.jciphertools.presentation.apidocs.ApiDocs;
 import com.jciphertools.presentation.dto.CipherRequestDto;
 import com.jciphertools.presentation.dto.CipherResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -15,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,10 +37,18 @@ public class CipherController {
         this.decryptUseCase = decryptUseCase;
     }
     @PostMapping("/encrypt")
-    @Operation(summary = "Encrypt input using the specified algorithm")
+    @Operation(
+        summary = "Encrypt input using the specified algorithm",
+        description = "Encrypts plain text input and returns the encrypted result. The algorithm must be one of RSA_OAEP, AES_CBC_256, or AES_GCM_256."
+    )
+    @RequestBody(
+        description = "Cipher request with plain text input and the algorithm to use for encryption.",
+        required = true,
+        content = @Content(schema = @Schema(implementation = CipherRequestDto.class))
+    )
     @ApiResponse(responseCode = "200", description = "Encryption successful")
     @ApiDocs.CommonCipherErrorResponses
-    public ResponseEntity<CipherResponseDto> encrypt(@Valid @RequestBody CipherRequestDto dto) {
+    public ResponseEntity<CipherResponseDto> encrypt(@Valid @org.springframework.web.bind.annotation.RequestBody CipherRequestDto dto) {
         long startTime = System.currentTimeMillis();
         String inputPreview = dto.input().length() > 50 ? dto.input().substring(0, 50) + "..." : dto.input();
         log.info("POST /api/v1/encrypt: algorithm={}, input_length={}", dto.algorithm(), dto.input().length());
@@ -51,10 +61,18 @@ public class CipherController {
     }
 
     @PostMapping("/decrypt")
-    @Operation(summary = "Decrypt input using the specified algorithm")
+    @Operation(
+        summary = "Decrypt input using the specified algorithm",
+        description = "Decrypts encrypted input and returns plain text. The input must match the selected algorithm and expected format."
+    )
+    @RequestBody(
+        description = "Cipher request with encrypted input and the algorithm used during encryption.",
+        required = true,
+        content = @Content(schema = @Schema(implementation = CipherRequestDto.class))
+    )
     @ApiResponse(responseCode = "200", description = "Decryption successful")
     @ApiDocs.CommonCipherErrorResponses
-    public ResponseEntity<CipherResponseDto> decrypt(@Valid @RequestBody CipherRequestDto dto) {
+    public ResponseEntity<CipherResponseDto> decrypt(@Valid @org.springframework.web.bind.annotation.RequestBody CipherRequestDto dto) {
         long startTime = System.currentTimeMillis();
         log.info("POST /api/v1/decrypt: algorithm={}, encrypted_input_length={}", dto.algorithm(), dto.input().length());
         
