@@ -8,10 +8,16 @@ import jakarta.validation.constraints.NotNull;
 @Schema(description = "Request payload for cipher operations")
 public record CipherRequestDto(
         @NotBlank
-        @Schema(description = "Plain text to encrypt or Base64 ciphertext to decrypt", example = "Hello World")
+                @Schema(
+                        description = "Input to process. Use plain text for /encrypt and Base64 ciphertext for /decrypt.",
+                        example = "Hello World"
+                )
         String input,
 
         @NotNull
-        @Schema(description = "Cipher algorithm to use", example = "AES_CBC_256")
+                @Schema(
+                        description = "Cipher algorithm to use. Allowed values: RSA_OAEP, AES_CBC_256, AES_GCM_256.",
+                        example = "AES_CBC_256"
+                )
         Algorithm algorithm
 ) {}

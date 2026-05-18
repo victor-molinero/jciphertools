@@ -1,6 +1,7 @@
 package com.jciphertools.presentation.apidocs;
 
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -19,13 +20,16 @@ public final class ApiDocs {
     @ApiResponses({
         @ApiResponse(responseCode = "400", description = "Invalid input or unknown algorithm",
             content = @Content(mediaType = "application/problem+json",
-                schema = @Schema(implementation = ProblemDetail.class))),
+                schema = @Schema(implementation = ProblemDetail.class),
+                examples = @ExampleObject(value = "{\"type\":\"about:blank\",\"title\":\"Bad Request\",\"status\":400,\"detail\":\"Validation failed\"}"))),
         @ApiResponse(responseCode = "422", description = "Cipher operation failed",
             content = @Content(mediaType = "application/problem+json",
-                schema = @Schema(implementation = ProblemDetail.class))),
+                schema = @Schema(implementation = ProblemDetail.class),
+                examples = @ExampleObject(value = "{\"type\":\"about:blank\",\"title\":\"Unprocessable Entity\",\"status\":422,\"detail\":\"Cipher operation failed\"}"))),
         @ApiResponse(responseCode = "500", description = "Unexpected server error",
             content = @Content(mediaType = "application/problem+json",
-                schema = @Schema(implementation = ProblemDetail.class)))
+                schema = @Schema(implementation = ProblemDetail.class),
+                examples = @ExampleObject(value = "{\"type\":\"about:blank\",\"title\":\"Internal Server Error\",\"status\":500,\"detail\":\"An unexpected error occurred\"}")))
     })
     public @interface CommonCipherErrorResponses {}
 }
