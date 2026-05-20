@@ -23,6 +23,31 @@ cors:
 server:
   port: 8081
 
+management:
+  server:
+    port: ${MANAGEMENT_PORT:8082}
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: when_authorized
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+
+info:
+  app:
+    name: ${spring.application.name}
+    version: "@project.version@"
+    description: Encryption/decryption API
+
 springdoc:
   api-docs:
     path: /v3/api-docs
@@ -32,3 +57,11 @@ springdoc:
     operations-sorter: method
     tags-sorter: alpha
   show-actuator: false
+
+spring:
+  application:
+    name: JCipherTools Backend
+  mvc:
+    problemdetails:
+      enabled: true
+      
