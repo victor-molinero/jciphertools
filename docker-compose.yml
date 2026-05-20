@@ -1,0 +1,25 @@
+services:
+  backend:
+    build:
+      context: ./jciphertools-backend
+      dockerfile: Dockerfile
+    container_name: jciphertools-backend
+    environment:
+      CORS_ALLOWED_ORIGINS: http://localhost:4000
+      SERVER_PORT: 8081
+      MANAGEMENT_PORT: 8082
+    ports:
+      - "8081:8081"
+      - "8082:8082"
+
+  frontend:
+    build:
+      context: ./jciphertools-frontend
+      dockerfile: Dockerfile
+    container_name: jciphertools-frontend
+    depends_on:
+      - backend
+    environment:
+      PORT: 4000
+    ports:
+      - "4000:4000"

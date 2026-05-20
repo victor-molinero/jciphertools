@@ -50,7 +50,6 @@ public class CipherController {
     @ApiDocs.CommonCipherErrorResponses
     public ResponseEntity<CipherResponseDto> encrypt(@Valid @org.springframework.web.bind.annotation.RequestBody CipherRequestDto dto) {
         long startTime = System.currentTimeMillis();
-        String inputPreview = dto.input().length() > 50 ? dto.input().substring(0, 50) + "..." : dto.input();
         log.info("POST /api/v1/encrypt: algorithm={}, input_length={}", dto.algorithm(), dto.input().length());
         
         CipherRequest request = new CipherRequest(dto.input(), dto.algorithm());
