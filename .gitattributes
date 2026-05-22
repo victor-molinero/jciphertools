@@ -1,0 +1,8 @@
+# Enforce LF for files executed in Linux containers.
+*.sh text eol=lf
+
+# Keep Docker and Compose files LF to avoid parser and tooling issues.
+Dockerfile text eol=lf
+*.Dockerfile text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
