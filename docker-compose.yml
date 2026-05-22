@@ -13,8 +13,7 @@ services:
       context: ./jciphertools-backend
       dockerfile: Dockerfile
     depends_on:
-      init-secrets:
-        condition: service_completed_successfully
+      - init-secrets
     container_name: jciphertools-backend
     volumes:
       - secrets:/secrets:ro
@@ -31,7 +30,7 @@ services:
       - backend
     environment:
       PORT: 4000
-      API_BACKEND_URL: http://backend/api/v1
+      API_BACKEND_URL: http://localhost:8081/api/v1
     ports:
       - "4000:4000"
 
