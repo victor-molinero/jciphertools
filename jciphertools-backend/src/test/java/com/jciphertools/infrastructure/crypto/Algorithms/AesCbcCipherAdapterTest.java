@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import com.jciphertools.domain.Algorithm;
 import com.jciphertools.domain.CipherRequest;
 import com.jciphertools.domain.CipherResponse;
+import com.jciphertools.infrastructure.config.properties.AesCbcProperties;
 
 class AesCbcCipherAdapterTest {
 
@@ -20,7 +21,7 @@ class AesCbcCipherAdapterTest {
     private static final String IV_BASE64 = Base64.getEncoder()
             .encodeToString("0123456789abcdef".getBytes());
 
-    private final AesCbcCipherAdapter adapter = new AesCbcCipherAdapter(KEY_BASE64, IV_BASE64);
+    private final AesCbcCipherAdapter adapter = new AesCbcCipherAdapter(new AesCbcProperties(KEY_BASE64, IV_BASE64));
 
     @Test
     void shouldEncryptAndDecryptRoundtrip() throws GeneralSecurityException {

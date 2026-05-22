@@ -34,3 +34,9 @@ node_modules/
 .github/
 
 *.pem
+
+**/.vscode/
+
+*.editorconfig
+
+dist/

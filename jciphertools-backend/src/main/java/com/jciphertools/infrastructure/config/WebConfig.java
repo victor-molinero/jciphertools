@@ -4,18 +4,21 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import com.jciphertools.infrastructure.config.properties.CorsProperties;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer  {
     
     private static final Logger log = LoggerFactory.getLogger(WebConfig.class);
+    private final List<String> allowedOrigins;
 
-    @Value("${cors.allowed-origins}")
-    private List<String> allowedOrigins;
+    public WebConfig(CorsProperties corsProperties) {
+        this.allowedOrigins = corsProperties.allowedOrigins();
+    }
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {

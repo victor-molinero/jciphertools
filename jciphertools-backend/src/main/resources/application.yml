@@ -2,26 +2,26 @@ cipher:
   aes:
     cbc:
       # 32-byte (256-bit) AES key, Base64-encoded — override via env vars in production
-      key: ${AES_CBC_KEY:c2VjcmV0S2V5Rm9yQWVzMjU2Qml0c0tleVZhbHVlISE=}
+      key: ${AES_CBC_KEY}
       # 16-byte IV, Base64-encoded
-      iv: ${AES_CBC_IV:aW5pdFZlY3RvcjE2Qnl0ZQ==}
+      iv: ${AES_CBC_IV}
     gcm:
       # 32-byte (256-bit) AES key, Base64-encoded — override via env vars in production
-      key: ${AES_GCM_KEY:3jIaFPkuyH6DYIyoFNykNaQBELjeQIbnXcbyxtG6BVU=}
+      key: ${AES_GCM_KEY}
       # 12-byte IV, Base64-encoded
-      iv: ${AES_GCM_IV:hVa/GvGYHS5mTIi6}
+      iv: ${AES_GCM_IV}
     
   rsa:
-    public-key-path: ${RSA_PUBLIC_KEY_PATH:keys/public_key.pem}
-    private-key-path: ${RSA_PRIVATE_KEY_PATH:keys/private_key.pem}
+    public-key-path: ${RSA_PUBLIC_KEY_PATH}
+    private-key-path: ${RSA_PRIVATE_KEY_PATH}
 
 
 cors:
-  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:4200}
+  allowed-origins: ${CORS_ALLOWED_ORIGINS}
 
 
 server:
-  port: 8081
+  port: ${SERVER_PORT:8081}
 
 management:
   server:
@@ -64,4 +64,3 @@ spring:
   mvc:
     problemdetails:
       enabled: true
-      

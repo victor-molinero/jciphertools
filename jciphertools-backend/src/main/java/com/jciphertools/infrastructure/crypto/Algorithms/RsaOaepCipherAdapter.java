@@ -18,11 +18,11 @@ import javax.crypto.spec.PSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.jciphertools.domain.CipherRequest;
 import com.jciphertools.domain.CipherResponse;
+import com.jciphertools.infrastructure.config.properties.RsaProperties;
 import com.jciphertools.infrastructure.crypto.CipherAdapter;
 
 @Component
@@ -37,9 +37,9 @@ public class RsaOaepCipherAdapter implements CipherAdapter {
     private final PublicKey publicKey;
     private final PrivateKey privateKey;
 
-    public RsaOaepCipherAdapter(
-            @Value("${cipher.rsa.public-key-path}") String publicKeyPath,
-            @Value("${cipher.rsa.private-key-path}") String privateKeyPath) throws Exception {
+    public RsaOaepCipherAdapter(RsaProperties properties) throws Exception {
+        String publicKeyPath = properties.publicKeyPath();
+        String privateKeyPath = properties.privateKeyPath();
         this.publicKey = loadPublicKey(Path.of(publicKeyPath));
         this.privateKey = loadPrivateKey(Path.of(privateKeyPath));
         log.info("RSA-OAEP adapter initialized with keys successfully loaded");

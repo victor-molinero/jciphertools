@@ -8,11 +8,11 @@ import java.util.Base64;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.jciphertools.domain.CipherRequest;
 import com.jciphertools.domain.CipherResponse;
+import com.jciphertools.infrastructure.config.properties.AesCbcProperties;
 import com.jciphertools.infrastructure.crypto.CipherAdapter;
 
 
@@ -28,12 +28,9 @@ public class AesCbcCipherAdapter implements CipherAdapter {
 
 
 
-    public AesCbcCipherAdapter(
-        @Value("${cipher.aes.cbc.key}") 
-        String base64Key,
-        @Value("${cipher.aes.cbc.iv}") 
-        String base64Iv
-    ) {
+    public AesCbcCipherAdapter(AesCbcProperties properties) {
+        String base64Key = properties.key();
+        String base64Iv = properties.iv();
         
         byte[] keyBytes = Base64.getDecoder().decode(base64Key);
         byte[] ivBytes  = Base64.getDecoder().decode(base64Iv);

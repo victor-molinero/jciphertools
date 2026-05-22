@@ -1,4 +1,15 @@
+declare global {
+  interface Window {
+    __runtimeConfig?: {
+      API_BACKEND_URL?: string;
+    };
+  }
+}
+
+const runtimeApiBaseUrl =
+  typeof window !== 'undefined' ? window.__runtimeConfig?.API_BACKEND_URL : undefined;
+
 export const environment = {
   production: true,
-  apiBaseUrl: 'http://fd43-dev-01:8081/api/v1'
+  apiBaseUrl: runtimeApiBaseUrl ?? 'API_BACKEND_URL_NOT_SET',
 };

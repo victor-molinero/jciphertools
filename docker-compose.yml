@@ -1,13 +1,23 @@
 services:
+  init-secrets:
+    build: ./init-secrets
+    volumes:
+      - secrets:/secrets
+    environment:
+      CORS_ALLOWED_ORIGINS: http://localhost:4000,http://localhost:4200
+      SERVER_PORT: 8081
+      MANAGEMENT_PORT: 8082
+    restart: "no"
   backend:
     build:
       context: ./jciphertools-backend
       dockerfile: Dockerfile
+    depends_on:
+      init-secrets:
+        condition: service_completed_successfully
     container_name: jciphertools-backend
-    environment:
-      CORS_ALLOWED_ORIGINS: http://localhost:4000
-      SERVER_PORT: 8081
-      MANAGEMENT_PORT: 8082
+    volumes:
+      - secrets:/secrets:ro
     ports:
       - "8081:8081"
       - "8082:8082"
@@ -21,5 +31,9 @@ services:
       - backend
     environment:
       PORT: 4000
+      API_BACKEND_URL: http://backend/api/v1
     ports:
       - "4000:4000"
+
+volumes:
+  secrets:
