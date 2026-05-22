@@ -12,6 +12,14 @@ const browserDistFolder = join(import.meta.dirname, '../browser');
 const app = express();
 const angularApp = new AngularNodeAppEngine();
 
+app.get('/runtime-config.js', (_req, res) => {
+  const apiBackendUrl = process.env['API_BACKEND_URL'] ?? 'API_BACKEND_URL_NOT_SET';
+  res.type('application/javascript');
+  res.send(
+    `window.__runtimeConfig = { API_BACKEND_URL: ${JSON.stringify(apiBackendUrl)} };`,
+  );
+});
+
 /**
  * Example Express Rest API endpoints can be defined here.
  * Uncomment and define endpoints as necessary.
@@ -27,6 +35,8 @@ const angularApp = new AngularNodeAppEngine();
 /**
  * Serve static files from /browser
  */
+
+
 app.use(
   express.static(browserDistFolder, {
     maxAge: '1y',

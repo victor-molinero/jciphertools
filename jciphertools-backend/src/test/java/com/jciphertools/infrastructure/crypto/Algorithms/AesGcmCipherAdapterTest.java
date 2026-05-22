@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import com.jciphertools.domain.Algorithm;
 import com.jciphertools.domain.CipherRequest;
 import com.jciphertools.domain.CipherResponse;
+import com.jciphertools.infrastructure.config.properties.AesGcmProperties;
 
 class AesGcmCipherAdapterTest {
 
@@ -22,7 +23,7 @@ class AesGcmCipherAdapterTest {
     private static final String IV_BASE64 = Base64.getEncoder()
             .encodeToString("0123456789ab".getBytes());
 
-    private final AesGcmCipherAdapter adapter = new AesGcmCipherAdapter(KEY_BASE64, IV_BASE64);
+    private final AesGcmCipherAdapter adapter = new AesGcmCipherAdapter(new AesGcmProperties(KEY_BASE64, IV_BASE64));
 
     @Test
     void shouldEncryptAndDecryptRoundtrip() throws GeneralSecurityException {

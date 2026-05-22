@@ -17,6 +17,7 @@ import org.junit.jupiter.api.io.TempDir;
 import com.jciphertools.domain.Algorithm;
 import com.jciphertools.domain.CipherRequest;
 import com.jciphertools.domain.CipherResponse;
+import com.jciphertools.infrastructure.config.properties.RsaProperties;
 
 class RsaOaepCipherAdapterTest {
 
@@ -28,7 +29,8 @@ class RsaOaepCipherAdapterTest {
         KeyPair keys = generateRsaKeyPair();
         Path publicKeyPath = writePublicKeyPem(keys, tempDir.resolve("public.pem"));
         Path privateKeyPath = writePrivateKeyPem(keys, tempDir.resolve("private.pem"));
-        RsaOaepCipherAdapter adapter = new RsaOaepCipherAdapter(publicKeyPath.toString(), privateKeyPath.toString());
+        RsaOaepCipherAdapter adapter = new RsaOaepCipherAdapter(
+            new RsaProperties(publicKeyPath.toString(), privateKeyPath.toString()));
 
         CipherResponse encrypted = adapter.encrypt(new CipherRequest("hello world", Algorithm.RSA_OAEP));
         CipherResponse decrypted = adapter.decrypt(new CipherRequest(encrypted.result(), Algorithm.RSA_OAEP));
@@ -43,7 +45,7 @@ class RsaOaepCipherAdapterTest {
         Path missingPrivate = tempDir.resolve("missing-private.pem");
 
         assertThrows(Exception.class,
-                () -> new RsaOaepCipherAdapter(missingPublic.toString(), missingPrivate.toString()));
+            () -> new RsaOaepCipherAdapter(new RsaProperties(missingPublic.toString(), missingPrivate.toString())));
     }
 
     @Test
@@ -51,7 +53,8 @@ class RsaOaepCipherAdapterTest {
         KeyPair keys = generateRsaKeyPair();
         Path publicKeyPath = writePublicKeyPem(keys, tempDir.resolve("public.pem"));
         Path privateKeyPath = writePrivateKeyPem(keys, tempDir.resolve("private.pem"));
-        RsaOaepCipherAdapter adapter = new RsaOaepCipherAdapter(publicKeyPath.toString(), privateKeyPath.toString());
+        RsaOaepCipherAdapter adapter = new RsaOaepCipherAdapter(
+            new RsaProperties(publicKeyPath.toString(), privateKeyPath.toString()));
 
         CipherRequest invalid = new CipherRequest("%%%", Algorithm.RSA_OAEP);
 
@@ -63,7 +66,8 @@ class RsaOaepCipherAdapterTest {
         KeyPair keys = generateRsaKeyPair();
         Path publicKeyPath = writePublicKeyPem(keys, tempDir.resolve("public.pem"));
         Path privateKeyPath = writePrivateKeyPem(keys, tempDir.resolve("private.pem"));
-        RsaOaepCipherAdapter adapter = new RsaOaepCipherAdapter(publicKeyPath.toString(), privateKeyPath.toString());
+        RsaOaepCipherAdapter adapter = new RsaOaepCipherAdapter(
+            new RsaProperties(publicKeyPath.toString(), privateKeyPath.toString()));
         String oversizedInput = "x".repeat(400);
 
         assertThrows(GeneralSecurityException.class,

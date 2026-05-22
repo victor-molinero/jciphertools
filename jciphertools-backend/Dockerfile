@@ -4,8 +4,6 @@ WORKDIR /app
 
 COPY pom.xml .
 COPY src ./src
-# Include keys if your app expects local key files
-COPY keys ./keys
 
 RUN mvn -q -DskipTests package
 
@@ -14,7 +12,9 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 COPY --from=builder /app/target/*SNAPSHOT.jar app.jar
-COPY --from=builder /app/keys ./keys
+
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 8081 8082
-ENTRYPOINT ["java","-jar","/app/app.jar"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
