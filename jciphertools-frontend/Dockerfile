@@ -6,8 +6,8 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
-# Important: use development config so apiBaseUrl stays localhost:8081
-RUN npm run build -- --configuration development
+# Build Angular app for production (runtime API URL is still injected by SSR)
+RUN npm run build -- --configuration production
 
 # Runtime stage
 FROM node:22-alpine
