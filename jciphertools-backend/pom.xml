@@ -13,7 +13,7 @@
 
     <groupId>com.jciphertools</groupId>
     <artifactId>jciphertools-backend</artifactId>
-    <version>0.1.0</version>
+    <version>0.2.0</version>
     <name>jciphertools-backend</name>
     <description>JCipherTools backend — encryption/decryption REST API</description>
 

@@ -1,8 +1,6 @@
 package com.jciphertools.infrastructure.crypto.Algorithms;
 
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.security.GeneralSecurityException;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
@@ -38,10 +36,8 @@ public class RsaOaepCipherAdapter implements CipherAdapter {
     private final PrivateKey privateKey;
 
     public RsaOaepCipherAdapter(RsaProperties properties) throws Exception {
-        String publicKeyPath = properties.publicKeyPath();
-        String privateKeyPath = properties.privateKeyPath();
-        this.publicKey = loadPublicKey(Path.of(publicKeyPath));
-        this.privateKey = loadPrivateKey(Path.of(privateKeyPath));
+        this.publicKey = loadPublicKey(properties.publicKeyPem());
+        this.privateKey = loadPrivateKey(properties.privateKeyPem());
         log.info("RSA-OAEP adapter initialized with keys successfully loaded");
     }
 
@@ -65,21 +61,23 @@ public class RsaOaepCipherAdapter implements CipherAdapter {
         return new CipherResponse(new String(decrypted, StandardCharsets.UTF_8));
     }
 
-    private static PublicKey loadPublicKey(Path path) throws Exception {
-        String pem = Files.readString(path)
-                .replaceAll("-----[A-Z ]+-----", "")
-                .replaceAll("\\s", "");
+    private static PublicKey loadPublicKey(String pemContent) throws Exception {
+        String pem = normalizePem(pemContent);
         byte[] der = Base64.getDecoder().decode(pem);
         KeyFactory kf = KeyFactory.getInstance("RSA");
         return kf.generatePublic(new X509EncodedKeySpec(der));
     }
 
-    private static PrivateKey loadPrivateKey(Path path) throws Exception {
-        String pem = Files.readString(path)
-                .replaceAll("-----[A-Z ]+-----", "")
-                .replaceAll("\\s", "");
+    private static PrivateKey loadPrivateKey(String pemContent) throws Exception {
+        String pem = normalizePem(pemContent);
         byte[] der = Base64.getDecoder().decode(pem);
         KeyFactory kf = KeyFactory.getInstance("RSA");
         return kf.generatePrivate(new PKCS8EncodedKeySpec(der));
+    }
+
+    private static String normalizePem(String pemContent) {
+        return pemContent
+                .replaceAll("-----[A-Z ]+-----", "")
+                .replaceAll("\\s", "");
     }
 }

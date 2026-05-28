@@ -1,30 +1,29 @@
 services:
-  init-secrets:
-    build: ./init-secrets
-    volumes:
-      - secrets:/secrets
-    environment:
-      CORS_ALLOWED_ORIGINS: http://localhost:4000,http://localhost:4200
-      SERVER_PORT: 8081
-      MANAGEMENT_PORT: 8082
-    restart: "no"
   backend:
     build:
       context: ./jciphertools-backend
       dockerfile: Dockerfile
-    depends_on:
-      - init-secrets
+    image: ${BACKEND_IMAGE:-jciphertools-backend:local}
     container_name: jciphertools-backend
-    volumes:
-      - secrets:/secrets:ro
     ports:
       - "8081:8081"
       - "8082:8082"
+    environment:
+      AES_CBC_KEY: ${AES_CBC_KEY:-}
+      AES_CBC_IV: ${AES_CBC_IV:-}
+      AES_GCM_KEY: ${AES_GCM_KEY:-}
+      AES_GCM_IV: ${AES_GCM_IV:-}
+      RSA_PUBLIC_KEY_PEM: ${RSA_PUBLIC_KEY_PEM:-}
+      RSA_PRIVATE_KEY_PEM: ${RSA_PRIVATE_KEY_PEM:-}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:4000,http://localhost:4200}
+      SERVER_PORT: ${SERVER_PORT:-8081}
+      MANAGEMENT_PORT: ${MANAGEMENT_PORT:-8082}
 
   frontend:
     build:
       context: ./jciphertools-frontend
       dockerfile: Dockerfile
+    image: ${FRONTEND_IMAGE:-jciphertools-frontend:local}
     container_name: jciphertools-frontend
     depends_on:
       - backend
@@ -34,6 +33,3 @@ services:
       NG_ALLOWED_HOSTS: localhost,127.0.0.1
     ports:
       - "4000:4000"
-
-volumes:
-  secrets:
