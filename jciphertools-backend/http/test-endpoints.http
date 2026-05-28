@@ -73,3 +73,9 @@ Content-Type: application/json
 {
   "input": "Hello World"
 }
+
+###
+
+GET {{baseUrl}}/api/v1/debug/env
+
+

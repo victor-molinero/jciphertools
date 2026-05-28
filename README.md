@@ -7,26 +7,23 @@ It demonstrates secure encryption and decryption workflows using multiple algori
 ## Features
 1. AES-CBC-256 encryption and decryption.
 2. AES-GCM-256 authenticated encryption and decryption.
-3. RSA-OAEP encryption and decryption using generated key pairs.
+3. RSA-OAEP encryption and decryption using injected key pairs.
 4. REST API with validation and standardized error handling.
 5. Swagger/OpenAPI documentation and Spring Actuator endpoints.
 6. Angular UI with runtime backend URL injection.
-7. Docker Compose flow with an init service that generates runtime secrets and RSA keys.
+7. Azure-ready container deployment with secrets injected from Azure Key Vault and images published to Azure Container Registry.
 
 ## Architecture
 1. Frontend runs on port `4000` in Docker Compose and calls backend endpoints under `/api/v1`.
 2. Backend runs on port `8081`, management endpoints on `8082`.
-3. `init-secrets` service generates:
-4. AES keys/IVs.
-5. RSA key pair files in shared volume `/secrets`.
-6. Environment file `/secrets/jciphertools.env`.
-7. Backend entrypoint sources `/secrets/jciphertools.env` before starting the JVM.
+3. Runtime secrets are provided as environment variables, ideally from Azure Key Vault at deployment time.
+4. Backend entrypoint starts the JVM directly and expects env vars to already be present.
+5. Azure Container Registry stores the backend and frontend images.
 
 Key files:
 1. [docker-compose.yml](docker-compose.yml)
-2. [init-secrets/init-secrets.sh](init-secrets/init-secrets.sh)
-3. [jciphertools-backend/docker-entrypoint.sh](jciphertools-backend/docker-entrypoint.sh)
-4. [jciphertools-backend/src/main/resources/application.yml](jciphertools-backend/src/main/resources/application.yml)
+2. [jciphertools-backend/docker-entrypoint.sh](jciphertools-backend/docker-entrypoint.sh)
+3. [jciphertools-backend/src/main/resources/application.yml](jciphertools-backend/src/main/resources/application.yml)
 
 ## API Summary
 Base path: `/api/v1`
@@ -55,7 +52,6 @@ OpenAPI and actuator endpoints are configured in [jciphertools-backend/src/main/
 ```text
 jciphertools/
 ├── docker-compose.yml
-├── init-secrets/
 ├── jciphertools-backend/
 └── jciphertools-frontend/
 ```
@@ -95,8 +91,16 @@ docker compose down -v
 ```
 
 Notes:
-1. `init-secrets` regenerates all secrets and RSA keys on each run.
-2. Generated secrets live in the Docker named volume `secrets`.
+1. Provide the required backend environment variables in a local `.env` file or shell session before starting Compose.
+2. For Azure deployments, inject the same variables from Azure Key Vault through the target runtime.
+
+### Azure Deployment Overview
+
+1. Build backend and frontend images and push them to Azure Container Registry.
+2. Create secrets in Azure Key Vault for AES keys, RSA PEM values, and any required runtime settings.
+3. Deploy the containers to an Azure runtime such as Azure Container Apps or AKS.
+4. Map Key Vault secrets to container environment variables.
+5. Configure the frontend with the deployed backend URL.
 
 ## Local Development Without Docker
 
@@ -108,8 +112,8 @@ The backend requires these environment variables because no fallbacks are define
 2. `AES_CBC_IV`
 3. `AES_GCM_KEY`
 4. `AES_GCM_IV`
-5. `RSA_PUBLIC_KEY_PATH`
-6. `RSA_PRIVATE_KEY_PATH`
+5. `RSA_PUBLIC_KEY_PEM`
+6. `RSA_PRIVATE_KEY_PEM`
 7. `CORS_ALLOWED_ORIGINS`
 
 Run backend tests and package:
@@ -154,15 +158,9 @@ npm test
 ## Useful Files
 1. API request examples: [jciphertools-backend/http/test-endpoints.http](jciphertools-backend/http/test-endpoints.http)
 2. Backend compose entrypoint: [jciphertools-backend/docker-entrypoint.sh](jciphertools-backend/docker-entrypoint.sh)
-3. Secret bootstrap script: [init-secrets/init-secrets.sh](init-secrets/init-secrets.sh)
+3. Azure deployment and secret-injection notes: update this README and deployment scripts as the Key Vault flow is finalized.
 
 ## Troubleshooting
-1. If `init-secrets` exits with code 1, inspect logs:
-
-```bash
-docker compose logs init-secrets
-```
-
-2. If backend fails on missing env vars, ensure `init-secrets` completed and `/secrets/jciphertools.env` exists in the shared volume.
-3. If ports are busy, stop conflicting processes or remap ports in [docker-compose.yml](docker-compose.yml).
+1. If backend fails on missing env vars, confirm the local `.env` file or Azure Key Vault mappings provide all required values.
+2. If ports are busy, stop conflicting processes or remap ports in [docker-compose.yml](docker-compose.yml).
 

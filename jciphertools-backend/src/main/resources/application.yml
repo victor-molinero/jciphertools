@@ -12,8 +12,8 @@ cipher:
       iv: ${AES_GCM_IV}
     
   rsa:
-    public-key-path: ${RSA_PUBLIC_KEY_PATH}
-    private-key-path: ${RSA_PRIVATE_KEY_PATH}
+    public-key-pem: ${RSA_PUBLIC_KEY_PEM}
+    private-key-pem: ${RSA_PRIVATE_KEY_PEM}
 
 
 cors:
